@@ -1,0 +1,140 @@
+/**
+ * ============================================================================
+ * ENHANCED SEARCH & FILTER BAR (React Island)
+ * ============================================================================
+ * Client-side search with advanced filters:
+ * - Price ranges
+ * - Brand selection
+ * - Storage capacity
+ * - RAM amount
+ * ============================================================================
+ */
+
+import React from 'react';
+import { useStore } from '@nanostores/react';
+import {
+    searchQuery,
+    selectedCategory,
+    selectedBrand,
+    selectedPriceRange,
+    selectedStorage,
+    selectedRAM,
+    resetFilters,
+} from '../stores/filterStore';
+
+export const SearchFilter: React.FC = () => {
+    const $searchQuery = useStore(searchQuery);
+    const $selectedCategory = useStore(selectedCategory);
+    const $selectedBrand = useStore(selectedBrand);
+    const $selectedPriceRange = useStore(selectedPriceRange);
+    const $selectedStorage = useStore(selectedStorage);
+    const $selectedRAM = useStore(selectedRAM);
+
+    const hasActiveFilters =
+        $searchQuery ||
+        $selectedCategory !== 'all' ||
+        $selectedBrand !== 'all' ||
+        $selectedPriceRange !== 'all' ||
+        $selectedStorage !== 'all' ||
+        $selectedRAM !== 'all';
+
+    return (
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm mb-8">
+            {/* Search Input */}
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="🔍 Search by name or brand..."
+                    value={$searchQuery}
+                    onChange={(e) => searchQuery.set(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-lg"
+                />
+            </div>
+
+            {/* Filter Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                {/* Category */}
+                <select
+                    value={$selectedCategory}
+                    onChange={(e) => selectedCategory.set(e.target.value)}
+                    className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                >
+                    <option value="all">All Types</option>
+                    <option value="phone">📱 Phones</option>
+                    <option value="laptop">💻 Laptops</option>
+                    <option value="tablet">📲 Tablets</option>
+                </select>
+
+                {/* Brand */}
+                <select
+                    value={$selectedBrand}
+                    onChange={(e) => selectedBrand.set(e.target.value)}
+                    className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                >
+                    <option value="all">All Brands</option>
+                    <option value="Samsung">Samsung</option>
+                    <option value="Tecno">Tecno</option>
+                    <option value="Infinix">Infinix</option>
+                    <option value="Xiaomi">Xiaomi</option>
+                    <option value="Oppo">Oppo</option>
+                    <option value="Realme">Realme</option>
+                    <option value="Vivo">Vivo</option>
+                    <option value="Apple">Apple</option>
+                    <option value="Nokia">Nokia</option>
+                </select>
+
+                {/* Price Range */}
+                <select
+                    value={$selectedPriceRange}
+                    onChange={(e) => selectedPriceRange.set(e.target.value)}
+                    className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                >
+                    <option value="all">Any Price</option>
+                    <option value="under15k">Under 15k</option>
+                    <option value="15k-30k">15k - 30k</option>
+                    <option value="30k-50k">30k - 50k</option>
+                    <option value="above50k">Above 50k</option>
+                </select>
+
+                {/* Storage */}
+                <select
+                    value={$selectedStorage}
+                    onChange={(e) => selectedStorage.set(e.target.value)}
+                    className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                >
+                    <option value="all">Any Storage</option>
+                    <option value="32">32GB</option>
+                    <option value="64">64GB</option>
+                    <option value="128">128GB</option>
+                    <option value="256">256GB+</option>
+                </select>
+
+                {/* RAM */}
+                <select
+                    value={$selectedRAM}
+                    onChange={(e) => selectedRAM.set(e.target.value)}
+                    className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                >
+                    <option value="all">Any RAM</option>
+                    <option value="2">2GB</option>
+                    <option value="3">3GB</option>
+                    <option value="4">4GB</option>
+                    <option value="6">6GB+</option>
+                    <option value="8">8GB+</option>
+                </select>
+            </div>
+
+            {/* Clear Filters Button */}
+            {hasActiveFilters && (
+                <div className="mt-4 text-center">
+                    <button
+                        onClick={resetFilters}
+                        className="px-6 py-2 text-gray-600 hover:text-emerald-600 font-medium transition-colors border border-gray-300 rounded-lg hover:border-emerald-500"
+                    >
+                        ✕ Clear All Filters
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+};

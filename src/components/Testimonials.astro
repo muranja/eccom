@@ -1,0 +1,59 @@
+---
+const testimonials = [
+    {
+        name: "John K.",
+        role: "Verified Buyer, Westlands",
+        text: "Saved KES 15,000 on my MacBook Pro. The WhatsApp checkout was super easy, and I paid on delivery.",
+        avatar: "https://i.pravatar.cc/150?u=john",
+    },
+    {
+        name: "Sarah M.",
+        role: "Student, UoN",
+        text: "Legit seller. I got my HP EliteBook the same day. The student discount is real!",
+        avatar: "https://i.pravatar.cc/150?u=sarah",
+    },
+    {
+        name: "David O.",
+        role: "Business Owner, Mombasa",
+        text: "The no-nonsense approach is refreshing. Saw the laptop on the site, chatted on WA, and received it via Wells Fargo the next morning.",
+        avatar: "https://i.pravatar.cc/150?u=david",
+    },
+];
+---
+
+<section class="bg-slate-50 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-black text-slate-900">
+                Trusted by Kenyans 🇰🇪
+            </h2>
+            <p class="text-gray-600 mt-2">
+                Join 500+ happy customers who saved big.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {
+                testimonials.map((t) => (
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xl">
+                                {t.name[0]}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900">
+                                    {t.name}
+                                </h3>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide">
+                                    {t.role}
+                                </p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic">"{t.text}"</p>
+                        <div class="flex text-amber-500 mt-4">★★★★★</div>
+                    </div>
+                ))
+            }
+        </div>
+    </div>
+</section>

@@ -1,0 +1,26 @@
+---
+/**
+ * ============================================================================
+ * CHECKOUT PAGE
+ * ============================================================================
+ *
+ * Full-page checkout experience. Displays:
+ * - Cart items with quantities and prices
+ * - M-Pesa payment instructions
+ * - "I Have Paid" confirmation button
+ * - Call / WhatsApp confirmation options
+ *
+ * The CheckoutPageContent React component handles all interactivity.
+ *
+ * ============================================================================
+ */
+import Layout from "../layouts/Layout.astro";
+import { CheckoutPageContent } from "../components/CheckoutPageContent";
+---
+
+<Layout
+    title="Checkout | SasaGadgets"
+    description="Complete your order and get your gadgets delivered."
+>
+    <CheckoutPageContent client:load />
+</Layout>
