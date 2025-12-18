@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow admin/config files
+Disallow: /.env
+Disallow: /.*
+
+# Sitemap
+Sitemap: https://sasagadgets.com/sitemap-index.xml

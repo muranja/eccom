@@ -1,3 +1,14 @@
+---
+name: "Xiaomi Redmi A3"
+price: 12499
+category: "phone"
+brand: "Xiaomi"
+image: "https://i02.appmifile.com/805_operator_sg/09/01/2024/9186e04bdf5d0c0bea2d6b5aad84a539.png"
+inStock: true
+storage: 128
+ram: 4
+---
+
 ## Xiaomi Redmi A3 Price in Kenya - Premium Design at a Budget Price
 
 The **Xiaomi Redmi A3** at SasaGadgets is a revolution in budget smartphone design. Moving away from the typical plastic look of entry-level phones, the Redmi A3 introduces the stunning **Premium Halo Design**, featuring a massive circular camera module and a sophisticated glass-back option that mimics the look of high-end flagships. With a smooth 90Hz display and a reliable 5000mAh battery, the Redmi A3 is designed for Kenyans who want a phone that looks expensive but costs very little.

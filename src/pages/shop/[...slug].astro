@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { AddToCartButton } from "../../components/AddToCartButton";
 import { FloatingCartButton } from "../../components/FloatingCartButton";
 import { CartPreview } from "../../components/CartPreview";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {

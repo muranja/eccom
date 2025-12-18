@@ -1,0 +1,16 @@
+{
+    "name": "SasaGadgets",
+    "short_name": "SasaGadgets",
+    "description": "Get the latest gadgets in Kenya. Phones, Laptops & Tech.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#10b981",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

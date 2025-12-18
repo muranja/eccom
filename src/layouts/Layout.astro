@@ -16,14 +16,44 @@ import { cartCount } from "../stores/cartStore";
 // Note: cartCount is a nanostore, we can't use it directly in SSG HTML for dynamic updates without client JS.
 // We will use a react component for the Cart Icon in the Navbar.
 import { CartIcon } from "../components/CartIcon";
+import { ToastContainer } from "../components/Toast";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import "../styles/global.css";
 
-// Default JSON-LD (WebSite schema) if none provided
+// Enhanced JSON-LD with Organization schema
 const defaultJsonLd = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "SasaGadgets",
-    url: "https://sasagadgets.com",
+    "@graph": [
+        {
+            "@type": "WebSite",
+            name: "SasaGadgets",
+            url: "https://sasagadgets.com",
+            potentialAction: {
+                "@type": "SearchAction",
+                target: "https://sasagadgets.com/?q={search_term_string}",
+                "query-input": "required name=search_term_string",
+            },
+        },
+        {
+            "@type": "Organization",
+            name: "SasaGadgets",
+            url: "https://sasagadgets.com",
+            logo: "https://sasagadgets.com/og-image.jpg",
+            description:
+                "Leading tech retailer in Nairobi, Kenya. Buy phones, laptops & gadgets with M-Pesa on delivery.",
+            address: {
+                "@type": "PostalAddress",
+                addressLocality: "Nairobi",
+                addressCountry: "KE",
+            },
+            contactPoint: {
+                "@type": "ContactPoint",
+                telephone: "+254714389231",
+                contactType: "Customer Service",
+                availableLanguage: ["English", "Swahili"],
+            },
+        },
+    ],
 };
 
 const schemaData = jsonLd || defaultJsonLd;
@@ -36,8 +66,43 @@ const schemaData = jsonLd || defaultJsonLd;
         <meta name="description" content={description} />
         <meta name="viewport" content="width=device-width" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="generator" content={Astro.generator} />
         <title>{title}</title>
+
+        <!-- Canonical URL -->
+        <link rel="canonical" href={Astro.url.href} />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={Astro.url.href} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={new URL(image, Astro.site)} />
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={Astro.url.href} />
+        <meta property="twitter:title" content={title} />
+        <meta property="twitter:description" content={description} />
+        <meta property="twitter:image" content={new URL(image, Astro.site)} />
+
+        <!-- Theme Color -->
+        <meta name="theme-color" content="#10b981" />
+
+        <!-- Google Analytics 4 -->
+        <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-GMV0M5RVXP"
+        ></script>
+        <script is:inline>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", "G-GMV0M5RVXP");
+        </script>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -98,7 +163,9 @@ const schemaData = jsonLd || defaultJsonLd;
                         class="font-medium hover:text-emerald-500 transition-colors"
                         >Blog</a
                     >
-                    <CartIcon client:idle />
+                    <ErrorBoundary client:load>
+                        <CartIcon client:idle />
+                    </ErrorBoundary>
                 </div>
             </div>
         </nav>
@@ -114,5 +181,8 @@ const schemaData = jsonLd || defaultJsonLd;
                 </p>
             </div>
         </footer>
+
+        <!-- Toast Notifications -->
+        <ToastContainer client:load />
     </body>
 </html>
