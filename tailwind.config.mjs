@@ -23,7 +23,7 @@ export default {
             },
             colors: {
                 primary: '#0f172a',
-                secondary: '#10b981',
+                secondary: '#059669', // emerald-600 for better contrast
                 accent: '#f59e0b',
             },
         },

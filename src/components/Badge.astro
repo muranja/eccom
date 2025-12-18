@@ -1,0 +1,44 @@
+---
+/**
+ * Badge Component
+ * Reusable badge/pill for categories, status, and labels
+ */
+interface Props {
+    variant?:
+        | "category"
+        | "success"
+        | "danger"
+        | "warning"
+        | "info"
+        | "neutral";
+    size?: "sm" | "md";
+    class?: string;
+}
+
+const { variant = "neutral", size = "sm", class: className = "" } = Astro.props;
+
+const variantClasses = {
+    category: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    success: "bg-green-100 text-green-700 border-green-200",
+    danger: "bg-red-100 text-red-700 border-red-200",
+    warning: "bg-amber-100 text-amber-700 border-amber-200",
+    info: "bg-blue-100 text-blue-700 border-blue-200",
+    neutral: "bg-slate-100 text-slate-700 border-slate-200",
+};
+
+const sizeClasses = {
+    sm: "px-2.5 py-0.5 text-xs",
+    md: "px-3 py-1 text-sm",
+};
+---
+
+<span
+    class:list={[
+        "inline-flex items-center font-semibold uppercase tracking-wide rounded-full border",
+        variantClasses[variant],
+        sizeClasses[size],
+        className,
+    ]}
+>
+    <slot />
+</span>

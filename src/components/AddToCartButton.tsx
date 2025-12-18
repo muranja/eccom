@@ -34,7 +34,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product }) => 
     return (
         <button
             onClick={handleClick}
-            className="bg-emerald-500 text-white px-4 py-2 rounded hover:bg-emerald-600 w-full font-semibold shadow-sm transition-all active:scale-95"
+            className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 w-full font-semibold shadow-sm transition-all active:scale-95"
         >
             Add to Cart
         </button>

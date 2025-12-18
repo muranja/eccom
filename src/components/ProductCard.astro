@@ -44,20 +44,24 @@ const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${whatsappMessage}`;
 
     <!-- Product Info -->
     <div class="flex flex-col flex-grow">
-        <p
-            class="text-xs text-emerald-700 font-bold uppercase tracking-wider mb-1"
-        >
-            {product.data.category}
-        </p>
+        <div class="mb-2">
+            <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-100 mb-2"
+            >
+                {product.data.category}
+            </span>
+        </div>
         <a href={`/shop/${product.slug}`}>
             <h3
-                class="font-bold text-lg text-slate-900 leading-tight hover:text-emerald-600 transition-colors mb-2"
+                class="font-bold text-lg text-slate-900 leading-tight hover:text-emerald-700 transition-colors mb-2"
             >
                 {product.data.name}
             </h3>
         </a>
-        <p class="text-gray-900 font-extrabold text-xl mb-auto">
-            KES {product.data.price.toLocaleString()}
+        <p class="text-slate-900 font-extrabold text-xl mb-auto">
+            <span class="text-sm font-normal text-gray-500 mr-1">KES</span>{
+                product.data.price.toLocaleString()
+            }
         </p>
     </div>
 

@@ -2,12 +2,15 @@
  * ============================================================================
  * PRODUCT GRID WITH ADVANCED FILTERING (React Island)
  * ============================================================================
- * Client-side filtered product display with multi-criteria filtering.
+ * Client-side filtered product display with multi-criteria filtering,
+ * sorting, product count, and enhanced accessibility.
  * ============================================================================
  */
 
 import React from 'react';
 import { useStore } from '@nanostores/react';
+import { FiSearch, FiHardDrive, FiCpu, FiPackage } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa';
 import {
     searchQuery,
     selectedCategory,
@@ -15,6 +18,8 @@ import {
     selectedPriceRange,
     selectedStorage,
     selectedRAM,
+    sortOrder,
+    resetFilters,
 } from '../stores/filterStore';
 
 interface Product {
@@ -45,6 +50,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
     const $selectedPriceRange = useStore(selectedPriceRange);
     const $selectedStorage = useStore(selectedStorage);
     const $selectedRAM = useStore(selectedRAM);
+    const $sortOrder = useStore(sortOrder);
 
     // Filter products based on all criteria
     const filteredProducts = products.filter((product) => {
@@ -113,22 +119,106 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
         );
     });
 
+    // Sort products
+    const sortedProducts = [...filteredProducts].sort((a, b) => {
+        switch ($sortOrder) {
+            case 'price-asc':
+                return a.data.price - b.data.price;
+            case 'price-desc':
+                return b.data.price - a.data.price;
+            case 'name-asc':
+                return a.data.name.localeCompare(b.data.name);
+            default:
+                return 0;
+        }
+    });
+
     const PHONE_NUMBER = '254714389231';
+    const totalProducts = products.length;
+    const filteredCount = sortedProducts.length;
+
+    // Build suggestion buttons for empty state
+    const getSuggestions = () => {
+        const suggestions: { label: string; action: () => void }[] = [];
+
+        if ($selectedBrand !== 'all') {
+            suggestions.push({
+                label: `All ${$selectedBrand}`,
+                action: () => {
+                    selectedCategory.set('all');
+                    selectedPriceRange.set('all');
+                    selectedStorage.set('all');
+                    selectedRAM.set('all');
+                },
+            });
+        }
+
+        if ($selectedCategory !== 'all') {
+            const categoryLabel = $selectedCategory.charAt(0).toUpperCase() + $selectedCategory.slice(1) + 's';
+            suggestions.push({
+                label: `All ${categoryLabel}`,
+                action: () => {
+                    selectedBrand.set('all');
+                    selectedPriceRange.set('all');
+                    selectedStorage.set('all');
+                    selectedRAM.set('all');
+                },
+            });
+        }
+
+        suggestions.push({
+            label: 'Clear All Filters',
+            action: resetFilters,
+        });
+
+        return suggestions;
+    };
 
     return (
         <>
-            {filteredProducts.length === 0 ? (
-                <div className="col-span-full text-center py-20 bg-white rounded-lg border border-dashed border-gray-300">
-                    <div className="text-6xl mb-4">🔍</div>
-                    <p className="text-xl text-gray-600">
-                        No products found matching your criteria.
+            {/* Product Count - Accessible live region */}
+            <div
+                className="col-span-full mb-4"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+            >
+                <p className="text-sm text-slate-600">
+                    Showing <span className="font-semibold text-slate-900">{filteredCount}</span> of{' '}
+                    <span className="font-semibold text-slate-900">{totalProducts}</span> products
+                </p>
+            </div>
+
+            {sortedProducts.length === 0 ? (
+                <div className="col-span-full flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-dashed border-gray-300 shadow-sm">
+                    <FiPackage className="w-16 h-16 text-slate-300 mb-4" aria-hidden="true" />
+                    <p className="text-xl font-bold text-slate-800 mb-2">
+                        No products found
                     </p>
-                    <p className="text-sm text-gray-400 mt-2">
-                        Try adjusting your filters or search terms.
+                    <p className="text-base text-gray-500 max-w-md text-center mb-6">
+                        {$selectedBrand !== 'all' && $selectedCategory !== 'all'
+                            ? `No ${$selectedBrand} ${$selectedCategory}s match your filters.`
+                            : $selectedBrand !== 'all'
+                                ? `No ${$selectedBrand} products match your filters.`
+                                : $selectedCategory !== 'all'
+                                    ? `No ${$selectedCategory}s match your filters.`
+                                    : "We couldn't find matches for your criteria."
+                        }
                     </p>
+                    <div className="flex flex-wrap justify-center gap-2">
+                        {getSuggestions().map((suggestion, index) => (
+                            <button
+                                key={index}
+                                onClick={suggestion.action}
+                                className="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg font-medium hover:bg-emerald-100 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            >
+                                {suggestion.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             ) : (
-                filteredProducts.map((product, index) => {
+                sortedProducts.map((product, index) => {
                     const whatsappMessage = encodeURIComponent(
                         `Hi! I'm interested in the ${product.data.name} (KES ${product.data.price.toLocaleString()}). Is this still available?`
                     );
@@ -137,70 +227,93 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                     return (
                         <div
                             key={product.slug}
-                            className="group relative p-4 border border-slate-100 rounded-xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 bg-white overflow-hidden"
+                            className="group relative flex flex-col h-full bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 border border-slate-200 overflow-hidden"
                         >
                             {/* Product Image */}
-                            <a href={`/shop/${product.slug}`} className="block" aria-label={`View ${product.data.name} details`}>
-                                <div className="relative h-48 w-full mb-4 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center">
+                            <a href={`/shop/${product.slug}`} className="block relative overflow-hidden" aria-label={`View ${product.data.name} details`}>
+                                <div className="aspect-[4/3] w-full bg-slate-100 flex items-center justify-center p-6 transition-colors duration-300 group-hover:bg-slate-50">
                                     {product.data.image ? (
                                         <img
                                             src={product.data.image}
                                             alt={product.data.name}
-                                            loading={index < 4 ? "eager" : "lazy"}
-                                            decoding={index < 4 ? "sync" : "async"}
-                                            fetchPriority={index < 4 ? "high" : "auto"}
-                                            width={300}
-                                            height={192}
-                                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                                            width="300"
+                                            height="225"
+                                            loading={index < 6 ? "eager" : "lazy"}
+                                            decoding={index < 6 ? "sync" : "async"}
+                                            fetchPriority={index < 3 ? "high" : "auto"}
+                                            className="object-contain w-full h-full mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
                                         />
                                     ) : (
-                                        <span className="text-gray-400">No Image</span>
+                                        <span className="text-gray-400 font-medium">No Image</span>
                                     )}
                                 </div>
+                                {/* Floating Badge */}
+                                <div className="absolute top-3 left-3">
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-white/90 backdrop-blur-sm text-emerald-700 shadow-sm border border-emerald-100">
+                                        {product.data.category}
+                                    </span>
+                                </div>
+                                {/* Stock Badge */}
+                                {!product.data.inStock && (
+                                    <div className="absolute top-3 right-3">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-red-100 text-red-700">
+                                            Out of Stock
+                                        </span>
+                                    </div>
+                                )}
                             </a>
 
                             {/* Product Info */}
-                            <div className="flex justify-between items-start mb-2">
-                                <div>
-                                    <p className="text-xs text-emerald-600 font-bold uppercase tracking-wider">
-                                        {product.data.category}
-                                    </p>
-                                    <a href={`/shop/${product.slug}`}>
-                                        <h3 className="font-bold text-lg text-slate-900 leading-tight hover:text-emerald-600 transition-colors">
-                                            {product.data.name}
-                                        </h3>
-                                    </a>
-                                </div>
-                            </div>
-                            <p className="text-gray-900 font-extrabold text-xl mt-2 mb-4">
-                                KES {product.data.price.toLocaleString()}
-                            </p>
+                            <div className="flex flex-col flex-grow p-5">
+                                <a href={`/shop/${product.slug}`} className="group-hover:text-emerald-700 transition-colors">
+                                    <h3 className="font-bold text-lg text-slate-900 leading-snug mb-1 line-clamp-2">
+                                        {product.data.name}
+                                    </h3>
+                                </a>
 
-                            {/* Action Buttons */}
-                            <div className="flex gap-2">
-                                <a
-                                    href={`/shop/${product.slug}`}
-                                    className="flex-1 bg-emerald-500 text-white px-4 py-2 rounded hover:bg-emerald-600 font-semibold shadow-sm transition-all active:scale-95 text-center"
-                                >
-                                    View Details
-                                </a>
-                                <a
-                                    href={whatsappUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded flex items-center justify-center transition-all active:scale-95 shadow-sm"
-                                    title="Chat on WhatsApp"
-                                    aria-label={`Chat about ${product.data.name} on WhatsApp`}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-5 w-5"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                                    </svg>
-                                </a>
+                                {/* Specs Preview */}
+                                <div className="flex items-center gap-2 text-xs text-gray-500 mb-4 mt-2 flex-wrap">
+                                    {product.data.storage && (
+                                        <span className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                                            <FiHardDrive className="h-3 w-3" aria-hidden="true" /> {product.data.storage}GB
+                                        </span>
+                                    )}
+                                    {product.data.ram && (
+                                        <span className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                                            <FiCpu className="h-3 w-3" aria-hidden="true" /> {product.data.ram}GB
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="mt-auto pt-4 border-t border-slate-100">
+                                    <div className="flex items-baseline justify-between mb-4">
+                                        <p className="text-slate-900 font-extrabold text-xl">
+                                            <span className="text-sm font-normal text-gray-500 mr-1">KES</span>
+                                            {product.data.price.toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="grid grid-cols-5 gap-2">
+                                        <a
+                                            href={`/shop/${product.slug}`}
+                                            className="col-span-3 flex items-center justify-center bg-slate-900 text-white px-4 py-2.5 rounded-lg hover:bg-slate-800 font-semibold shadow-sm hover:shadow transition-all active:scale-[0.98] text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+                                        >
+                                            View Details
+                                        </a>
+                                        <a
+                                            href={whatsappUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="col-span-2 flex items-center justify-center bg-emerald-600 text-white px-3 py-2.5 rounded-lg hover:bg-emerald-700 transition-all active:scale-[0.98] shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                                            title="Chat on WhatsApp"
+                                            aria-label={`Chat about ${product.data.name} on WhatsApp`}
+                                        >
+                                            <span className="font-medium mr-1.5 hidden sm:inline text-sm">Chat</span>
+                                            <FaWhatsapp className="h-5 w-5" aria-hidden="true" />
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     );

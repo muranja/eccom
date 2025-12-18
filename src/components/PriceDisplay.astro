@@ -1,0 +1,41 @@
+---
+/**
+ * Price Display Component
+ * Consistent price formatting across the site
+ */
+interface Props {
+    price: number;
+    size?: "sm" | "md" | "lg" | "xl";
+    showCurrency?: boolean;
+    class?: string;
+}
+
+const {
+    price,
+    size = "md",
+    showCurrency = true,
+    class: className = "",
+} = Astro.props;
+
+const sizeClasses = {
+    sm: "text-base",
+    md: "text-xl",
+    lg: "text-2xl",
+    xl: "text-3xl",
+};
+---
+
+<p
+    class:list={[
+        "font-extrabold text-emerald-600",
+        sizeClasses[size],
+        className,
+    ]}
+>
+    {
+        showCurrency && (
+            <span class="text-sm font-normal text-gray-500 mr-1">KES</span>
+        )
+    }
+    {price.toLocaleString()}
+</p>

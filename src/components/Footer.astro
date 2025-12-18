@@ -1,0 +1,79 @@
+---
+/**
+ * Footer Component
+ * Site footer with copyright and links
+ */
+import { SITE_CONFIG } from "../config/site";
+---
+
+<footer class="bg-slate-900 text-white py-12 mt-12">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <!-- Brand -->
+            <div>
+                <h3 class="text-xl font-black mb-4">
+                    Sasa<span class="text-emerald-400">Gadgets</span>
+                </h3>
+                <p class="text-gray-400 text-sm">
+                    Kenya's trusted tech retailer. Quality gadgets with M-Pesa
+                    on delivery.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h4 class="font-bold text-white mb-4">Quick Links</h4>
+                <ul class="space-y-2 text-sm">
+                    <li>
+                        <a
+                            href="/shop"
+                            class="text-gray-400 hover:text-emerald-400 transition-colors"
+                            >Shop All</a>
+                    </li>
+                    <li>
+                        <a
+                            href="/shop?category=phone"
+                            class="text-gray-400 hover:text-emerald-400 transition-colors"
+                            >Phones</a>
+                    </li>
+                    <li>
+                        <a
+                            href="/shop?category=laptop"
+                            class="text-gray-400 hover:text-emerald-400 transition-colors"
+                            >Laptops</a>
+                    </li>
+                    <li>
+                        <a
+                            href="/blog"
+                            class="text-gray-400 hover:text-emerald-400 transition-colors"
+                            >Blog</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 class="font-bold text-white mb-4">Contact Us</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li>Nairobi CBD, Kenya</li>
+                    <li>
+                        <a
+                            href={`https://wa.me/${SITE_CONFIG.whatsappNumber}`}
+                            class="hover:text-emerald-400 transition-colors"
+                        >
+                            WhatsApp: +{SITE_CONFIG.phone}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="border-t border-slate-800 pt-8 text-center">
+            <p class="text-gray-400 text-sm">
+                © {new Date().getFullYear()}
+                {SITE_CONFIG.name}. {SITE_CONFIG.tagline}.
+            </p>
+        </div>
+    </div>
+</footer>

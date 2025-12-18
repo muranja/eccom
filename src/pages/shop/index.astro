@@ -1,0 +1,102 @@
+---
+/**
+ * Shop Page
+ * Dedicated shop listing with URL-based filtering and dynamic SEO
+ */
+import Layout from "../../layouts/Layout.astro";
+import { SearchFilter } from "../../components/SearchFilter";
+import { ProductGrid } from "../../components/ProductGrid";
+import { ShopBreadcrumbs } from "../../components/ShopBreadcrumbs";
+import { FilterChips } from "../../components/FilterChips";
+import { MobileFilterDrawer } from "../../components/MobileFilterDrawer";
+import { getCollection } from "astro:content";
+
+const allProducts = await getCollection("products");
+
+// Read URL params for SEO meta tags
+const url = Astro.url;
+const brand = url.searchParams.get("brand");
+const category = url.searchParams.get("category");
+
+// Build dynamic title
+let pageTitle = "Shop All Products";
+if (brand && category) {
+    pageTitle = `${brand} ${category.charAt(0).toUpperCase() + category.slice(1)}s`;
+} else if (brand) {
+    pageTitle = `${brand} Products`;
+} else if (category) {
+    pageTitle = `${category.charAt(0).toUpperCase() + category.slice(1)}s`;
+}
+pageTitle += " in Kenya | SasaGadgets";
+
+// Build dynamic description
+let pageDescription =
+    "Browse our collection of smartphones, laptops, and tech gadgets in Kenya. Best prices with M-Pesa payment and fast delivery.";
+if (brand) {
+    pageDescription = `Shop ${brand} products in Kenya. Find the latest ${brand} phones and gadgets at competitive prices with same-day delivery in Nairobi.`;
+} else if (category) {
+    pageDescription = `Explore our ${category} collection in Kenya. Quality ${category}s at unbeatable prices with M-Pesa on delivery.`;
+}
+
+// Canonical URL (without sorting params to avoid duplicates)
+const canonicalParams = new URLSearchParams();
+if (brand) canonicalParams.set("brand", brand);
+if (category) canonicalParams.set("category", category);
+const canonicalUrl = canonicalParams.toString()
+    ? `https://sasagadgets.com/shop?${canonicalParams.toString()}`
+    : "https://sasagadgets.com/shop";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+    <Fragment slot="head">
+        <link rel="canonical" href={canonicalUrl} />
+    </Fragment>
+
+    <!-- Skip to Products Link (Accessibility) -->
+    <a
+        href="#products-grid"
+        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-emerald-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
+    >
+        Skip to products
+    </a>
+
+    <!-- Page Header -->
+    <div class="py-6">
+        <!-- Breadcrumbs (React Island) -->
+        <ShopBreadcrumbs client:load />
+
+        <h1 class="text-3xl md:text-4xl font-black text-slate-900 mb-2">
+            {
+                brand || category
+                    ? `${brand || ""} ${category ? category.charAt(0).toUpperCase() + category.slice(1) + "s" : "Products"}`.trim()
+                    : "Shop All Products"
+            }
+        </h1>
+        <p class="text-gray-600">
+            Find the perfect device at the best price. Pay via M-Pesa on
+            delivery.
+        </p>
+    </div>
+
+    <!-- Search & Filter -->
+    <SearchFilter client:load />
+
+    <!-- Active Filter Chips -->
+    <FilterChips client:load />
+
+    <!-- Products Grid -->
+    <section
+        id="products-grid"
+        aria-labelledby="products-heading"
+        role="region"
+        aria-label="Product results"
+    >
+        <h2 id="products-heading" class="sr-only">Available Products</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+            <ProductGrid client:load products={allProducts} />
+        </div>
+    </section>
+
+    <!-- Mobile Filter Drawer -->
+    <MobileFilterDrawer client:load />
+</Layout>
