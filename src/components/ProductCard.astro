@@ -16,7 +16,11 @@ const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${whatsappMessage}`;
     class="group relative p-4 border border-slate-100 rounded-xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 bg-white overflow-hidden flex flex-col"
 >
     <!-- Product Image with Optimized Loading -->
-    <a href={`/shop/${product.slug}`} class="block">
+    <a
+        href={`/shop/${product.slug}`}
+        class="block"
+        aria-label={`View ${product.data.name} details`}
+    >
         <div
             class="relative h-48 w-full mb-4 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center"
         >
@@ -26,6 +30,9 @@ const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${whatsappMessage}`;
                         src={product.data.image}
                         alt={product.data.name}
                         loading="lazy"
+                        decoding="async"
+                        width="300"
+                        height="192"
                         class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                     />
                 ) : (

@@ -140,13 +140,16 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                             className="group relative p-4 border border-slate-100 rounded-xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 bg-white overflow-hidden"
                         >
                             {/* Product Image */}
-                            <a href={`/shop/${product.slug}`} className="block">
+                            <a href={`/shop/${product.slug}`} className="block" aria-label={`View ${product.data.name} details`}>
                                 <div className="relative h-48 w-full mb-4 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center">
                                     {product.data.image ? (
                                         <img
                                             src={product.data.image}
                                             alt={product.data.name}
                                             loading="lazy"
+                                            decoding="async"
+                                            width={300}
+                                            height={192}
                                             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : (
@@ -186,6 +189,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                                     rel="noopener noreferrer"
                                     className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded flex items-center justify-center transition-all active:scale-95 shadow-sm"
                                     title="Chat on WhatsApp"
+                                    aria-label={`Chat about ${product.data.name} on WhatsApp`}
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
