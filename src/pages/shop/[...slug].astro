@@ -5,6 +5,7 @@ import { FloatingCartButton } from "../../components/FloatingCartButton";
 import { CartPreview } from "../../components/CartPreview";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { getCollection } from "astro:content";
+import ProductCard from "../../components/ProductCard.astro";
 
 export async function getStaticPaths() {
     const products = await getCollection("products");
@@ -16,6 +17,16 @@ export async function getStaticPaths() {
 
 const { product } = Astro.props;
 const { Content } = await product.render();
+
+// Fetch Related Products
+const allProducts = await getCollection("products");
+const relatedProducts = allProducts
+    .filter(
+        (p) =>
+            p.slug !== product.slug &&
+            p.data.category === product.data.category,
+    )
+    .slice(0, 3);
 
 const PHONE_NUMBER = "254714389231";
 
@@ -129,6 +140,24 @@ const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${whatsappMessage}`;
             </div>
         </div>
     </div>
+
+    <!-- Related Products Section -->
+    {
+        relatedProducts.length > 0 && (
+            <div class="border-t border-gray-100 bg-slate-50/50 py-12 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+                <div class="max-w-7xl mx-auto">
+                    <h2 class="text-2xl font-black text-slate-900 mb-8 flex items-center gap-2">
+                        <span class="text-emerald-500">✨</span> Related Gadgets
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {relatedProducts.map((relatedProduct) => (
+                            <ProductCard product={relatedProduct} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     <!-- Sticky Action Bar (Always Visible) -->
     <div
