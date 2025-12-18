@@ -95,7 +95,7 @@ export const CartPreview: React.FC = () => {
                                     d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                                 />
                             </svg>
-                            <p className="text-gray-500 text-lg font-semibold mb-2">
+                            <p className="text-gray-600 text-lg font-semibold mb-2">
                                 Your cart is empty
                             </p>
                             <p className="text-gray-400 text-sm">
@@ -113,7 +113,7 @@ export const CartPreview: React.FC = () => {
                                         <h3 className="font-semibold text-gray-900 text-sm leading-tight mb-1">
                                             {item.name}
                                         </h3>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-xs text-gray-600">
                                             Qty: {item.quantity} × KES{' '}
                                             {item.price.toLocaleString()}
                                         </p>
@@ -166,7 +166,7 @@ export const CartPreview: React.FC = () => {
                             </button>
                         </div>
 
-                        <p className="text-xs text-center text-gray-500 mt-3">
+                        <p className="text-xs text-center text-gray-600 mt-3">
                             <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
                             FREE Delivery within Nairobi CBD
                         </p>

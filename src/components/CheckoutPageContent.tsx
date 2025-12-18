@@ -59,7 +59,7 @@ export const CheckoutPageContent: React.FC = () => {
                 <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
                     <div className="text-6xl mb-4">🛒</div>
                     <h2 className="text-xl font-bold text-slate-900 mb-2">Your cart is empty</h2>
-                    <p className="text-gray-500 mb-6">Add some products to get started</p>
+                    <p className="text-gray-600 mb-6">Add some products to get started</p>
                     <a
                         href="/"
                         className="inline-block bg-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-600 transition-colors"
@@ -81,7 +81,7 @@ export const CheckoutPageContent: React.FC = () => {
                                 <div key={item.id} className="p-4 flex justify-between items-center">
                                     <div>
                                         <p className="font-semibold text-slate-900">{item.name}</p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-gray-600">
                                             Qty: {item.quantity} × KES {item.price.toLocaleString()}
                                         </p>
                                     </div>

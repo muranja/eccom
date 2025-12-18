@@ -52,13 +52,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
                 {/* Cart Items */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                     {items.length === 0 ? (
-                        <p className="text-center text-gray-500 py-8">Your cart is empty</p>
+                        <p className="text-center text-gray-600 py-8">Your cart is empty</p>
                     ) : (
                         items.map(item => (
                             <div key={item.id} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg">
                                 <div>
                                     <p className="font-semibold text-slate-900">{item.name}</p>
-                                    <p className="text-sm text-gray-500">Qty: {item.quantity} × KES {item.price.toLocaleString()}</p>
+                                    <p className="text-sm text-gray-600">Qty: {item.quantity} × KES {item.price.toLocaleString()}</p>
                                 </div>
                                 <button
                                     onClick={() => removeCartItem(item.id)}

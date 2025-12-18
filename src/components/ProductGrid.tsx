@@ -120,7 +120,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
             {filteredProducts.length === 0 ? (
                 <div className="col-span-full text-center py-20 bg-white rounded-lg border border-dashed border-gray-300">
                     <div className="text-6xl mb-4">🔍</div>
-                    <p className="text-xl text-gray-500">
+                    <p className="text-xl text-gray-600">
                         No products found matching your criteria.
                     </p>
                     <p className="text-sm text-gray-400 mt-2">

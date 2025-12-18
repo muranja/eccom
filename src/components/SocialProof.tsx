@@ -65,7 +65,7 @@ export const SocialProof: React.FC = () => {
                         <p className="font-semibold text-slate-900 text-sm">
                             {currentNotification.name}
                         </p>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-600">
                             {currentNotification.location}
                         </span>
                     </div>
