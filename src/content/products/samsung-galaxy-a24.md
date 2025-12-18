@@ -3,7 +3,7 @@ name: "Samsung Galaxy A24 4G"
 price: 27500
 category: "phone"
 brand: "Samsung"
-image: "/images/products/phone-samsung.jpg"
+image: "/images/products/phone-samsung.webp"
 inStock: true
 ---
 

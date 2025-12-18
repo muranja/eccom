@@ -3,7 +3,7 @@ name: "iPhone 13 128GB"
 price: 85000
 category: "phone"
 brand: "Apple"
-image: "/images/products/phone-iphone13.jpg"
+image: "/images/products/phone-iphone13.webp"
 inStock: true
 ---
 ## Apple iPhone 13 Price in Kenya - The Perfect Balance of Performance & Value

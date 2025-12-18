@@ -8,7 +8,7 @@ ram: 8
 battery: 5000
 camera: "13MP"
 screenSize: 6.6
-image: "/images/products/phone-infinix.jpg"
+image: "/images/products/phone-infinix.webp"
 inStock: true
 ---
 

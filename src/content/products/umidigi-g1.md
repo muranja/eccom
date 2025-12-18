@@ -3,7 +3,7 @@ name: "UMIDIGI G1"
 price: 9500
 category: "phone"
 brand: "UMIDIGI"
-image: "/images/products/phone-generic.jpg"
+image: "/images/products/phone-generic.webp"
 inStock: true
 ---
 

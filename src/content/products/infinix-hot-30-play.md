@@ -3,7 +3,7 @@ name: "Infinix Hot 30 Play"
 price: 18500
 category: "phone"
 brand: "Infinix"
-image: "/images/products/phone-xiaomi.jpg"
+image: "/images/products/phone-xiaomi.webp"
 inStock: true
 ---
 

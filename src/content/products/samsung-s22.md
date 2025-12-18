@@ -3,7 +3,7 @@ name: "Samsung Galaxy S22 Ultra"
 price: 95000
 category: "phone"
 brand: "Samsung"
-image: "/images/products/phone-samsung.jpg"
+image: "/images/products/phone-samsung.webp"
 inStock: true
 ---
 ## Samsung Galaxy S22 Ultra 5G Price in Kenya - The Ultimate Productivity Powerhouse

@@ -8,7 +8,7 @@ ram: 6
 battery: 5000
 camera: "50MP"
 screenSize: 6.5
-image: "/images/products/phone-samsung.jpg"
+image: "/images/products/phone-samsung.webp"
 inStock: true
 ---
 

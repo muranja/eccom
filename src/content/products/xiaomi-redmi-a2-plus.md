@@ -3,7 +3,7 @@ name: "XIAOMI Redmi A2+"
 price: 12900
 category: "phone"
 brand: "Xiaomi"
-image: "/images/products/phone-xiaomi.jpg"
+image: "/images/products/phone-xiaomi.webp"
 inStock: true
 ---
 

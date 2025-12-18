@@ -8,7 +8,7 @@ ram: 12
 battery: 5100
 camera: "Triple 50MP"
 screenSize: 6.77
-image: "/images/products/phone-tecno.jpg"
+image: "/images/products/phone-tecno.webp"
 inStock: true
 ---
 

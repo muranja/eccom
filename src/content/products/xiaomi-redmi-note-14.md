@@ -8,7 +8,7 @@ ram: 6
 battery: 5000
 camera: "50MP"
 screenSize: 6.67
-image: "/images/products/phone-xiaomi.jpg"
+image: "/images/products/phone-xiaomi.webp"
 inStock: true
 ---
 

@@ -3,7 +3,7 @@ name: "Oppo A58"
 price: 28000
 category: "phone"
 brand: "Oppo"
-image: "/images/products/phone-generic.jpg"
+image: "/images/products/phone-generic.webp"
 inStock: true
 ---
 

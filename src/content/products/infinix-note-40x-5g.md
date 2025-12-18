@@ -8,7 +8,7 @@ ram: 8
 battery: 5000
 camera: "108MP"
 screenSize: 6.78
-image: "/images/products/phone-infinix.jpg"
+image: "/images/products/phone-infinix.webp"
 inStock: true
 ---
 

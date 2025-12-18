@@ -8,7 +8,7 @@ ram: 4
 battery: 5000
 camera: "50MP"
 screenSize: 6.52
-image: "/images/products/phone-generic.jpg"
+image: "/images/products/phone-generic.webp"
 inStock: true
 ---
 
