@@ -3,7 +3,7 @@ name: "Xiaomi Redmi A3"
 price: 12499
 category: "phone"
 brand: "Xiaomi"
-image: "https://i02.appmifile.com/805_operator_sg/09/01/2024/9186e04bdf5d0c0bea2d6b5aad84a539.png"
+image: "/images/products/phone-xiaomi.jpg"
 inStock: true
 storage: 128
 ram: 4

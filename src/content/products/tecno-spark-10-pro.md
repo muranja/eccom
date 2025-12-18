@@ -3,7 +3,7 @@ name: "Tecno Spark 10 Pro"
 price: 22200
 category: "phone"
 brand: "Tecno"
-image: "https://images.unsplash.com/photo-1585060544812-6b45742d762f?auto=format&fit=crop&q=80&w=1000"
+image: "/images/products/phone-tecno.jpg"
 inStock: true
 ---
 

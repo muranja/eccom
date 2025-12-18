@@ -51,7 +51,7 @@ const allProducts = await getCollection("products");
     <section aria-labelledby="products-heading">
         <h2 id="products-heading" class="sr-only">Available Products</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-            <ProductGrid client:load products={allProducts} />
+            <ProductGrid client:visible products={allProducts} />
         </div>
     </section>
 

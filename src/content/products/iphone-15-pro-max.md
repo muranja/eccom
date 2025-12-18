@@ -3,7 +3,7 @@ name: "Apple iPhone 15 Pro Max 256GB"
 price: 146999
 category: "phone"
 brand: "Apple"
-image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&q=80&w=1000"
+image: "/images/products/phone-iphone15.jpg"
 inStock: true
 ---
 

@@ -3,7 +3,7 @@ name: "Itel P40 4G"
 price: 11000
 category: "phone"
 brand: "Itel"
-image: "https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?auto=format&fit=crop&q=80&w=1000"
+image: "/images/products/phone-infinix.jpg"
 inStock: true
 ---
 

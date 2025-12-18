@@ -8,7 +8,7 @@ ram: 3
 battery: 5000
 camera: "13MP"
 screenSize: 6.5
-image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=1000"
+image: "/images/products/phone-samsung.jpg"
 inStock: true
 ---
 

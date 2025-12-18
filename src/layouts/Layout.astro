@@ -90,11 +90,7 @@ const schemaData = jsonLd || defaultJsonLd;
         <!-- Theme Color -->
         <meta name="theme-color" content="#10b981" />
 
-        <!-- Google Analytics 4 -->
-        <script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-GMV0M5RVXP"
-        ></script>
+        <!-- Google Analytics 4 - Deferred for performance -->
         <script is:inline>
             window.dataLayer = window.dataLayer || [];
             function gtag() {
@@ -102,6 +98,14 @@ const schemaData = jsonLd || defaultJsonLd;
             }
             gtag("js", new Date());
             gtag("config", "G-GMV0M5RVXP");
+            // Defer GA script loading until after page load
+            window.addEventListener("load", function () {
+                var s = document.createElement("script");
+                s.src =
+                    "https://www.googletagmanager.com/gtag/js?id=G-GMV0M5RVXP";
+                s.async = true;
+                document.head.appendChild(s);
+            });
         </script>
 
         <!-- Fonts - Preload for performance -->
@@ -196,6 +200,6 @@ const schemaData = jsonLd || defaultJsonLd;
         </footer>
 
         <!-- Toast Notifications -->
-        <ToastContainer client:load />
+        <ToastContainer client:idle />
     </body>
 </html>

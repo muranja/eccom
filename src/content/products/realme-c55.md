@@ -8,7 +8,7 @@ ram: 8
 battery: 5000
 camera: "64MP"
 screenSize: 6.72
-image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=1000"
+image: "/images/products/phone-generic.jpg"
 inStock: true
 ---
 

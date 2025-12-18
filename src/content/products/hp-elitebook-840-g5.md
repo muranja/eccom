@@ -3,7 +3,7 @@ name: "HP EliteBook 840 G5"
 price: 35000
 category: "laptop"
 brand: "HP"
-image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=1000"
+image: "/images/products/laptop-hp.jpg"
 inStock: true
 ---
 ## HP EliteBook 840 G5 Price in Kenya - Premium Performance for Professionals
