@@ -42,5 +42,5 @@ html {
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  /* font-family: system-ui, sans-serif; - handled by Tailwind */
 }
