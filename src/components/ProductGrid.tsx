@@ -128,7 +128,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                     </p>
                 </div>
             ) : (
-                filteredProducts.map((product) => {
+                filteredProducts.map((product, index) => {
                     const whatsappMessage = encodeURIComponent(
                         `Hi! I'm interested in the ${product.data.name} (KES ${product.data.price.toLocaleString()}). Is this still available?`
                     );
@@ -146,8 +146,9 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                                         <img
                                             src={product.data.image}
                                             alt={product.data.name}
-                                            loading="lazy"
-                                            decoding="async"
+                                            loading={index < 4 ? "eager" : "lazy"}
+                                            decoding={index < 4 ? "sync" : "async"}
+                                            fetchPriority={index < 4 ? "high" : "auto"}
                                             width={300}
                                             height={192}
                                             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
