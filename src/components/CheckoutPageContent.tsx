@@ -35,12 +35,12 @@ export const CheckoutPageContent: React.FC = () => {
     };
 
     const handleWhatsApp = () => {
-        let message = `👋 *New Order Request*\n\nI would like to purchase:\n\n`;
+        let message = `✅ *New Order Request*\n\nI would like to purchase:\n\n`;
         items.forEach((item, i) => {
             message += `${i + 1}. ${item.name} (x${item.quantity}) @ KES ${item.price.toLocaleString()}\n`;
         });
-        message += `\n💰 *TOTAL: KES ${$cartTotal.toLocaleString()}*\n`;
-        message += `\nI have made the payment. Please confirm.`;
+        message += `\n💳 *TOTAL: KES ${$cartTotal.toLocaleString()}*\n\n`;
+        message += `I have made the payment. Please confirm.`;
 
         const encoded = encodeURIComponent(message);
         window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
