@@ -58,6 +58,7 @@ export const SearchFilter: React.FC = () => {
                     value={$selectedCategory}
                     onChange={(e) => selectedCategory.set(e.target.value)}
                     className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                    aria-label="Filter by category"
                 >
                     <option value="all">All Types</option>
                     <option value="phone">📱 Phones</option>
@@ -70,6 +71,7 @@ export const SearchFilter: React.FC = () => {
                     value={$selectedBrand}
                     onChange={(e) => selectedBrand.set(e.target.value)}
                     className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                    aria-label="Filter by brand"
                 >
                     <option value="all">All Brands</option>
                     <option value="Samsung">Samsung</option>
@@ -88,6 +90,7 @@ export const SearchFilter: React.FC = () => {
                     value={$selectedPriceRange}
                     onChange={(e) => selectedPriceRange.set(e.target.value)}
                     className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                    aria-label="Filter by price range"
                 >
                     <option value="all">Any Price</option>
                     <option value="under15k">Under 15k</option>
@@ -101,6 +104,7 @@ export const SearchFilter: React.FC = () => {
                     value={$selectedStorage}
                     onChange={(e) => selectedStorage.set(e.target.value)}
                     className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                    aria-label="Filter by storage capacity"
                 >
                     <option value="all">Any Storage</option>
                     <option value="32">32GB</option>
@@ -114,6 +118,7 @@ export const SearchFilter: React.FC = () => {
                     value={$selectedRAM}
                     onChange={(e) => selectedRAM.set(e.target.value)}
                     className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm"
+                    aria-label="Filter by RAM"
                 >
                     <option value="all">Any RAM</option>
                     <option value="2">2GB</option>

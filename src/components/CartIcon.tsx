@@ -20,6 +20,7 @@ export const CartIcon: React.FC = () => {
         <a
             href="/checkout"
             className="relative p-2 text-gray-600 hover:text-emerald-600 transition-colors flex items-center gap-2"
+            aria-label={`Cart with ${$cartCount} items`}
         >
             <span className="font-bold hidden sm:inline">Cart</span>
             <div className="relative">
