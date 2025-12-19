@@ -62,8 +62,26 @@ function loadCart(): CartState {
     if (typeof window === 'undefined') return {};
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
-        return stored ? JSON.parse(stored) : {};
-    } catch {
+        if (!stored) return {};
+
+        const parsed = JSON.parse(stored);
+
+        // Validation: Ensure valid structure
+        const isValid = Object.values(parsed).every((item: any) =>
+            item &&
+            typeof item.id === 'string' &&
+            typeof item.price === 'number' && !isNaN(item.price) &&
+            typeof item.quantity === 'number' && !isNaN(item.quantity)
+        );
+
+        if (!isValid) {
+            console.warn('[CartStore] Found invalid cart data, resetting.', parsed);
+            return {};
+        }
+
+        return parsed;
+    } catch (e) {
+        console.error('[CartStore] Failed to load cart:', e);
         return {};
     }
 }
@@ -108,6 +126,7 @@ cartItems.subscribe((cart) => {
  * @param product - The product to add (must have id, name, price)
  */
 export function addCartItem(product: Pick<Product, 'id' | 'name' | 'price'>) {
+    console.log('[CartStore] Adding item:', product);
     const cart = cartItems.get();
     const existing = cart[product.id];
 

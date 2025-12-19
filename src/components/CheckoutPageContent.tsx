@@ -14,6 +14,7 @@
 
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { cartItems, cartTotal, removeCartItem, clearCart, type CartItem } from '../stores/cartStore';
 
 // ============================================================================
@@ -26,32 +27,125 @@ const PHONE_NUMBER = '254714389231';
 export const CheckoutPageContent: React.FC = () => {
     const $cartItems = useStore(cartItems);
     const $cartTotal = useStore(cartTotal);
-    const [hasPaid, setHasPaid] = useState(false);
+
+    // UI States
+    const [hasPaid, setHasPaid] = useState(false); // Legacy: Manual confirm
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [orderPlaced, setOrderPlaced] = useState(false);
+    const [submitError, setSubmitError] = useState('');
 
     const items = Object.values($cartItems) as CartItem[];
+
+    const WEBHOOK_URL = import.meta.env.PUBLIC_N8N_WEBHOOK_URL || 'https://gatuyu.duckdns.org/webhook-test/21dc22f4-26d8-4122-8b6a-d9c33c85df1c';
 
     const handleCall = () => {
         window.location.href = `tel:+${PHONE_NUMBER}`;
     };
 
     const handleWhatsApp = () => {
-        let message = `✅ *New Order Request*\n\nI would like to purchase:\n\n`;
+        let message = `✅ *New Order Reference*\n\nI would like to purchase:\n\n`;
         items.forEach((item, i) => {
             message += `${i + 1}. ${item.name} (x${item.quantity}) @ KES ${item.price.toLocaleString()}\n`;
         });
-        message += `\n💳 *TOTAL: KES ${$cartTotal.toLocaleString()}*\n\n`;
-        message += `I have made the payment. Please confirm.`;
+        message += `\n💳 *TOTAL: KES ${$cartTotal.toLocaleString()}*\n`;
+        message += `📞 Customer: ${phoneNumber}\n\n`;
+        message += `I have placed the order. Please confirm.`;
 
         const encoded = encodeURIComponent(message);
         window.open(`https://wa.me/${PHONE_NUMBER}?text=${encoded}`, '_blank');
     };
 
+    const submitOrder = async () => {
+        if (!phoneNumber || phoneNumber.length < 9) {
+            setSubmitError('Please enter a valid phone number');
+            return;
+        }
+
+        setIsSubmitting(true);
+        setSubmitError('');
+
+        const orderData = {
+            items: items.map(i => ({ name: i.name, qty: i.quantity, price: i.price, id: i.id })),
+            total: $cartTotal,
+            customerPhone: phoneNumber,
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            // Send to n8n Webhook
+            await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+
+            setOrderPlaced(true);
+            clearCart(); // Optional: clear cart or keep it until payment confirmed? Usually clear it.
+            // Actually, keep cart for now or user loses context if they refresh. 
+            // Let's NOT clear cart yet, wait for manual clear or assume success.
+            // Better to clear it to prevent double order, but since we redirect...
+            // Let's clear it.
+            clearCart();
+
+        } catch (error) {
+            console.error("Order trigger failed", error);
+            setSubmitError('Something went wrong. Please try again or contact us directly.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (orderPlaced) {
+        return (
+            <div className="max-w-xl mx-auto text-center py-12">
+                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+                    <span className="text-4xl">🎉</span>
+                </div>
+                <h2 className="text-3xl font-black text-slate-900 mb-4">Order Placed!</h2>
+                <p className="text-gray-600 text-lg mb-8">
+                    We have received your order. Please check your phone ({phoneNumber}) for an M-Pesa prompt to complete payment.
+                </p>
+
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8 text-left">
+                    <h3 className="font-bold text-slate-900 mb-2">Didn't get a prompt?</h3>
+                    <p className="text-gray-700 mb-4">
+                        Don't worry! You can pay manually via Paybill:
+                    </p>
+                    <div className="space-y-2 font-mono text-sm">
+                        <p>Paybill: <strong className="bg-white px-1 rounded">{PAYBILL_NUMBER}</strong></p>
+                        <p>Account: <strong className="bg-white px-1 rounded">{ACCOUNT_NAME}</strong></p>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <button
+                        onClick={handleWhatsApp}
+                        className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    >
+                        <FaWhatsapp className="w-6 h-6" />
+                        Chat on WhatsApp
+                    </button>
+                    <button
+                        onClick={handleCall}
+                        className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-3"
+                    >
+                        Call to Confirm
+                    </button>
+                    <a href="/" className="block text-emerald-600 font-semibold hover:underline mt-6">
+                        Return to Shop
+                    </a>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="max-w-2xl mx-auto">
             {/* Header */}
             <div className="text-center mb-8">
-                <h1 className="text-3xl font-black text-slate-900 mb-2">🛒 Checkout</h1>
-                <p className="text-gray-600">Review your order and complete payment</p>
+                <h1 className="text-3xl font-black text-slate-900 mb-2">Checkout</h1>
+                <p className="text-gray-600">Secure M-Pesa Payment</p>
             </div>
 
             {/* Empty Cart State */}
@@ -72,7 +166,7 @@ export const CheckoutPageContent: React.FC = () => {
             {/* Cart Items */}
             {items.length > 0 && (
                 <>
-                    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-6">
+                    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-6 shadow-sm">
                         <div className="p-4 bg-slate-50 border-b border-gray-100">
                             <h2 className="font-bold text-slate-900">Order Summary</h2>
                         </div>
@@ -82,7 +176,7 @@ export const CheckoutPageContent: React.FC = () => {
                                     <div>
                                         <p className="font-semibold text-slate-900">{item.name}</p>
                                         <p className="text-sm text-gray-600">
-                                            Qty: {item.quantity} × KES {item.price.toLocaleString()}
+                                            {item.quantity} x KES {item.price.toLocaleString()}
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-4">
@@ -91,7 +185,8 @@ export const CheckoutPageContent: React.FC = () => {
                                         </span>
                                         <button
                                             onClick={() => removeCartItem(item.id)}
-                                            className="text-red-500 hover:text-red-700 text-sm"
+                                            className="text-red-500 hover:text-red-700 text-sm p-1"
+                                            aria-label="Remove item"
                                         >
                                             ✕
                                         </button>
@@ -100,103 +195,71 @@ export const CheckoutPageContent: React.FC = () => {
                             ))}
                         </div>
                         <div className="p-4 bg-slate-50 border-t border-gray-100 flex justify-between items-center">
-                            <span className="font-bold text-lg">Total:</span>
+                            <span className="font-bold text-lg">Total To Pay:</span>
                             <span className="font-black text-2xl text-emerald-600">
                                 KES {$cartTotal.toLocaleString()}
                             </span>
                         </div>
                     </div>
 
-                    {/* Free Delivery Banner */}
-                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-6 text-center">
-                        <span className="text-emerald-700 font-semibold">
-                            🚚 FREE Delivery within Nairobi CBD
-                        </span>
+                    {/* Trust Badges */}
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="bg-blue-50 p-3 rounded-lg flex items-center justify-center gap-2 text-blue-800 text-sm font-semibold">
+                            <span>🔒</span> Secure Payment
+                        </div>
+                        <div className="bg-emerald-50 p-3 rounded-lg flex items-center justify-center gap-2 text-emerald-800 text-sm font-semibold">
+                            <span>⚡</span> Instant Delivery
+                        </div>
                     </div>
 
-                    {/* Payment Instructions (shown before payment confirmation) */}
-                    {!hasPaid && (
-                        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 mb-6">
-                            <h3 className="font-bold text-slate-900 text-lg mb-4">📝 Payment Instructions</h3>
-                            <ol className="space-y-3 text-gray-700">
-                                <li className="flex gap-3">
-                                    <span className="bg-amber-200 text-amber-800 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
-                                    <span>Open <strong>M-Pesa</strong> on your phone</span>
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="bg-amber-200 text-amber-800 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
-                                    <span>Go to <strong>Lipa na M-Pesa</strong> → <strong>Paybill</strong></span>
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="bg-amber-200 text-amber-800 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
-                                    <span>Business Number: <strong className="text-slate-900 bg-amber-100 px-2 py-0.5 rounded">{PAYBILL_NUMBER}</strong></span>
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="bg-amber-200 text-amber-800 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">4</span>
-                                    <span>Account Number: <strong className="text-slate-900 bg-amber-100 px-2 py-0.5 rounded">{ACCOUNT_NAME}</strong></span>
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="bg-amber-200 text-amber-800 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">5</span>
-                                    <span>Amount: <strong className="text-slate-900 bg-amber-100 px-2 py-0.5 rounded">KES {$cartTotal.toLocaleString()}</strong></span>
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="bg-amber-200 text-amber-800 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">6</span>
-                                    <span>Enter your <strong>M-Pesa PIN</strong> to confirm</span>
-                                </li>
-                            </ol>
+                    {/* Checkout Form */}
+                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                        <h3 className="font-bold text-lg text-slate-900 mb-4">M-Pesa Express Checkout</h3>
+
+                        <div className="mb-6">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Phone Number (M-Pesa)
+                            </label>
+                            <input
+                                type="tel"
+                                placeholder="0712 345 678"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg transition-all"
+                            />
+                            {submitError && (
+                                <p className="text-red-500 text-sm mt-2">{submitError}</p>
+                            )}
                         </div>
-                    )}
 
-                    {/* Action Buttons */}
-                    <div className="space-y-4">
-                        {!hasPaid ? (
-                            <button
-                                onClick={() => setHasPaid(true)}
-                                className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 rounded-xl transition-colors text-lg shadow-lg"
-                            >
-                                ✅ I Have Paid
-                            </button>
-                        ) : (
-                            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
-                                <div className="text-center mb-6">
-                                    <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <span className="text-3xl">✓</span>
-                                    </div>
-                                    <h3 className="text-xl font-bold text-slate-900 mb-2">Payment Received!</h3>
-                                    <p className="text-gray-600">Now contact us to confirm your order:</p>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <button
-                                        onClick={handleCall}
-                                        className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-3"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                                        </svg>
-                                        Call to Confirm
-                                    </button>
-
-                                    <button
-                                        onClick={handleWhatsApp}
-                                        className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-3"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                                        </svg>
-                                        Confirm via WhatsApp
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Continue Shopping Link */}
-                        <a
-                            href="/"
-                            className="block text-center text-gray-500 hover:text-emerald-600 transition-colors py-2"
+                        <button
+                            onClick={submitOrder}
+                            disabled={isSubmitting}
+                            className={`w-full py-4 px-6 rounded-xl font-bold text-white text-lg transition-all shadow-lg flex items-center justify-center gap-3
+                                ${isSubmitting
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-emerald-600 hover:bg-emerald-700 hover:-translate-y-1'
+                                }`}
                         >
-                            ← Continue Shopping
-                        </a>
+                            {isSubmitting ? (
+                                <>
+                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Processing...
+                                </>
+                            ) : (
+                                <>
+                                    <span>Pay KES {$cartTotal.toLocaleString()}</span>
+                                    <span>→</span>
+                                </>
+                            )}
+                        </button>
+
+                        <p className="text-center text-xs text-gray-500 mt-4">
+                            You will receive an M-Pesa prompt on your phone to complete payment.
+                        </p>
                     </div>
                 </>
             )}

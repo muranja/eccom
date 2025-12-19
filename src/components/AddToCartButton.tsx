@@ -19,16 +19,27 @@ interface AddToCartButtonProps {
  */
 export const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product }) => {
     const handleClick = () => {
-        console.log('Adding to cart:', product);
+        try {
+            console.log('AddToCartButton clicked for:', product);
 
-        // Add to cart
-        addCartItem(product as Product);
+            // Add to cart
+            addCartItem(product as Product);
+            console.log('Item sent to store');
 
-        // Track analytics
-        analytics.trackAddToCart(product.id, product.name, product.price);
+            // Open cart preview
+            import('../stores/cartStore').then(({ openCartPreview }) => openCartPreview());
 
-        // Show success toast
-        showToast(`${product.name} added to cart!`, 'success');
+            // Track analytics
+            if (analytics) {
+                analytics.trackAddToCart(product.id, product.name, product.price);
+            }
+
+            // Show success toast
+            showToast(`${product.name} added to cart!`, 'success');
+        } catch (error) {
+            console.error('Error in AddToCartButton:', error);
+            alert('Failed to add to cart. Please try again.');
+        }
     };
 
     return (

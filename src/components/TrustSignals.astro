@@ -3,75 +3,33 @@
  * Trust Signals Component
  * Displays trust badges for product pages
  */
+import Icon from "./Icon.astro";
 ---
 
 <div
     class="flex flex-wrap items-center gap-4 py-4 px-5 bg-slate-50 rounded-xl border border-slate-100 mb-6"
 >
+    <!-- Genuine Text -->
     <div class="flex items-center gap-2 text-sm">
-        <svg
-            class="w-5 h-5 text-emerald-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-            ></path>
-        </svg>
+        <Icon name="shield" class="w-5 h-5 text-emerald-600" />
         <span class="text-slate-700 font-medium">100% Genuine</span>
     </div>
+
+    <!-- Delivery -->
     <div class="flex items-center gap-2 text-sm">
-        <svg
-            class="w-5 h-5 text-emerald-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
+        <Icon name="clock" class="w-5 h-5 text-emerald-600" />
         <span class="text-slate-700 font-medium">Same-Day Delivery</span>
     </div>
+
+    <!-- Warranty -->
     <div class="flex items-center gap-2 text-sm">
-        <svg
-            class="w-5 h-5 text-emerald-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
+        <Icon name="check" class="w-5 h-5 text-emerald-600" />
         <span class="text-slate-700 font-medium">1-Year Warranty</span>
     </div>
+
+    <!-- Payment -->
     <div class="flex items-center gap-2 text-sm">
-        <svg
-            class="w-5 h-5 text-emerald-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-            ></path>
-        </svg>
+        <Icon name="money" class="w-5 h-5 text-emerald-600" />
         <span class="text-slate-700 font-medium">M-Pesa Accepted</span>
     </div>
 </div>

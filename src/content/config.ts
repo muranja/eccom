@@ -15,6 +15,7 @@ const products = defineCollection({
         battery: z.number().optional(), // in mAh
         camera: z.string().optional(), // e.g., "64MP"
         screenSize: z.number().optional(), // in inches
+        processor: z.string().optional(), // e.g., "Intel Core i5-8350U"
     }),
 });
 

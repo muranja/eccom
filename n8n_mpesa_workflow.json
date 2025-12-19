@@ -1,0 +1,127 @@
+{
+    "name": "M-Pesa STK Push Integration",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "mpesa-trigger",
+                "options": {}
+            },
+            "name": "Frontend Trigger",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                460,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer {{ $json.accessToken }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "BusinessShortCode",
+                            "value": "174379"
+                        },
+                        {
+                            "name": "Password",
+                            "value": "={{ $json.password }}"
+                        },
+                        {
+                            "name": "Timestamp",
+                            "value": "={{ $json.timestamp }}"
+                        },
+                        {
+                            "name": "TransactionType",
+                            "value": "CustomerPayBillOnline"
+                        },
+                        {
+                            "name": "Amount",
+                            "value": "={{ $node[\"Frontend Trigger\"].json.body.amount }}"
+                        },
+                        {
+                            "name": "PartyA",
+                            "value": "={{ $node[\"Frontend Trigger\"].json.body.phone }}"
+                        },
+                        {
+                            "name": "PartyB",
+                            "value": "174379"
+                        },
+                        {
+                            "name": "PhoneNumber",
+                            "value": "={{ $node[\"Frontend Trigger\"].json.body.phone }}"
+                        },
+                        {
+                            "name": "CallBackURL",
+                            "value": "https://your-n8n-instance.com/webhook/mpesa-callback"
+                        },
+                        {
+                            "name": "AccountReference",
+                            "value": "SasaGadgets"
+                        },
+                        {
+                            "name": "TransactionDesc",
+                            "value": "Purchase of Goods"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "M-Pesa STK Push",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                900,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "functionCode": "// Calculate Timestamp\nconst now = new Date();\nconst timestamp = now.getFullYear().toString() + \n    (now.getMonth() + 1).toString().padStart(2, '0') + \n    now.getDate().toString().padStart(2, '0') + \n    now.getHours().toString().padStart(2, '0') + \n    now.getMinutes().toString().padStart(2, '0') + \n    now.getSeconds().toString().padStart(2, '0');\n\n// Generate Password (Shortcode + Passkey + Timestamp) -> Base64\nconst shortCode = '174379'; // Replace with env var in production\nconst passkey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'; // Replace with env var\nconst password = Buffer.from(shortCode + passkey + timestamp).toString('base64');\n\nreturn {\n  timestamp,\n  password\n};"
+            },
+            "name": "Generate Password",
+            "type": "n8n-nodes-base.function",
+            "typeVersion": 1,
+            "position": [
+                680,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Frontend Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Password",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate Password": {
+            "main": [
+                [
+                    {
+                        "node": "M-Pesa STK Push",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

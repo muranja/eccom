@@ -3,6 +3,8 @@ import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 
 const posts = await getCollection("blog");
+console.log("Blog Posts Found:", posts.length);
+posts.forEach((p) => console.log("-", p.slug, p.data.title));
 ---
 
 <Layout title="Tech Blog - Reviews & Guides | SasaGadgets">

@@ -1,0 +1,77 @@
+---
+/**
+ * Responsive Image Component
+ * Renders optimized images with srcset for different screen sizes
+ */
+interface Props {
+    src: string; // Original image path e.g. "/images/products/phone-samsung.webp"
+    alt: string;
+    class?: string;
+    loading?: "lazy" | "eager";
+    sizes?: string;
+    width?: number;
+    height?: number;
+}
+
+const {
+    src,
+    alt,
+    class: className = "",
+    loading = "lazy",
+    sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw",
+    width,
+    height,
+} = Astro.props;
+
+// Extract filename and generate responsive paths
+const getResponsivePaths = (originalSrc: string) => {
+    // Check if it's a product image
+    if (
+        !originalSrc.includes("/images/products/") ||
+        !originalSrc.endsWith(".webp")
+    ) {
+        return null;
+    }
+
+    // Extract base name: /images/products/phone-samsung.webp -> phone-samsung
+    const filename = originalSrc.split("/").pop()?.replace(".webp", "");
+    if (!filename) return null;
+
+    return {
+        srcset: [
+            `/images/products/responsive/${filename}@400w.webp 400w`,
+            `/images/products/responsive/${filename}@800w.webp 800w`,
+            `/images/products/responsive/${filename}@1200w.webp 1200w`,
+        ].join(", "),
+        fallback: originalSrc,
+    };
+};
+
+const responsive = getResponsivePaths(src);
+---
+
+{
+    responsive ? (
+        <img
+            src={responsive.fallback}
+            srcset={responsive.srcset}
+            sizes={sizes}
+            alt={alt}
+            loading={loading}
+            decoding={loading === "eager" ? "sync" : "async"}
+            width={width}
+            height={height}
+            class={className}
+        />
+    ) : (
+        <img
+            src={src}
+            alt={alt}
+            loading={loading}
+            decoding={loading === "eager" ? "sync" : "async"}
+            width={width}
+            height={height}
+            class={className}
+        />
+    )
+}

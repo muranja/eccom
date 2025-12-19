@@ -10,6 +10,8 @@ import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import ProductSpecs from "../../components/ProductSpecs.astro";
 import WhatsAppButton from "../../components/WhatsAppButton.astro";
 import TrustSignals from "../../components/TrustSignals.astro";
+import ResponsiveImage from "../../components/ResponsiveImage.astro";
+import Badge from "../../components/Badge.astro";
 
 export async function getStaticPaths() {
     const products = await getCollection("products");
@@ -98,12 +100,13 @@ const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${whatsappMessage}`;
         >
             {
                 product.data.image && (
-                    <img
+                    <ResponsiveImage
                         src={product.data.image}
                         alt={product.data.name}
                         loading="eager"
-                        width="600"
-                        height="600"
+                        width={600}
+                        height={600}
+                        sizes="(max-width: 640px) 100vw, 50vw"
                         class="w-full h-auto rounded-lg"
                     />
                 )
@@ -113,22 +116,14 @@ const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${whatsappMessage}`;
         <!-- Details Section -->
         <div>
             <div class="flex items-center gap-2 mb-4 flex-wrap">
-                <span
-                    class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide"
-                >
+                <Badge variant="category" size="md">
                     {product.data.category}
-                </span>
+                </Badge>
                 {
-                    product.data.inStock ? (
-                        <span class="inline-flex items-center bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
-                            <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5" />
-                            In Stock
-                        </span>
-                    ) : (
-                        <span class="inline-flex items-center bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
-                            <span class="w-2 h-2 bg-red-500 rounded-full mr-1.5" />
+                    !product.data.inStock && (
+                        <Badge variant="danger" size="md">
                             Out of Stock
-                        </span>
+                        </Badge>
                     )
                 }
             </div>
@@ -138,6 +133,14 @@ const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${whatsappMessage}`;
             <p class="text-3xl font-extrabold text-emerald-600 mb-4">
                 KES {product.data.price.toLocaleString()}
             </p>
+
+            <!-- Add to Cart Button (Primary) -->
+            <div class="mb-6 mt-2">
+                <AddToCartButton
+                    client:load
+                    product={{ id: product.slug, ...product.data }}
+                />
+            </div>
 
             <!-- Trust Signals -->
             <TrustSignals />
@@ -156,12 +159,6 @@ const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${whatsappMessage}`;
             </div>
 
             <div class="border-t border-gray-200 pt-6 space-y-3 pb-24 md:pb-6">
-                <!-- Add to Cart Button -->
-                <AddToCartButton
-                    client:load
-                    product={{ id: product.slug, ...product.data }}
-                />
-
                 <!-- WhatsApp Direct Contact -->
                 <WhatsAppButton href={whatsappUrl} />
 

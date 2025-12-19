@@ -11,6 +11,7 @@ import React from 'react';
 import { useStore } from '@nanostores/react';
 import { FiSearch, FiHardDrive, FiCpu, FiPackage } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
+import Fuse from 'fuse.js';
 import {
     searchQuery,
     selectedCategory,
@@ -52,13 +53,48 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
     const $selectedRAM = useStore(selectedRAM);
     const $sortOrder = useStore(sortOrder);
 
-    // Filter products based on all criteria
-    const filteredProducts = products.filter((product) => {
-        // Search filter
-        const matchesSearch =
-            product.data.name.toLowerCase().includes($searchQuery.toLowerCase()) ||
-            product.data.brand.toLowerCase().includes($searchQuery.toLowerCase());
+    // Derived state for fallback message
+    let fallbackMessage = '';
+    let isFallbackResult = false;
 
+    // Filter products based on all criteria
+    let filteredProducts = products;
+
+    // 1. Search Logic (Fuse.js + Fallback)
+    if ($searchQuery.trim()) {
+        const fuse = new Fuse(products, {
+            keys: ['data.name', 'data.brand', 'data.category'],
+            threshold: 0.3, // 0.0 = exact match, 1.0 = match anything
+            includeScore: true
+        });
+
+        const searchResults = fuse.search($searchQuery);
+
+        if (searchResults.length > 0) {
+            filteredProducts = searchResults.map(r => r.item);
+        } else {
+            // FALLBACK LOGIC
+            // Check if query contains a known brand
+            const knownBrands = Array.from(new Set(products.map(p => p.data.brand)));
+            const foundBrand = knownBrands.find(brand =>
+                $searchQuery.toLowerCase().includes(brand.toLowerCase())
+            );
+
+            if (foundBrand) {
+                filteredProducts = products.filter(p => p.data.brand === foundBrand);
+                fallbackMessage = `We couldn't find "${$searchQuery}", but here are other ${foundBrand} devices.`;
+                isFallbackResult = true;
+            } else {
+                filteredProducts = [];
+            }
+        }
+    }
+
+    // 2. Apply other filters (Category, Brand, Price, etc.)
+    // Note: If it's a fallback result, we might want to respect other filters or ignore them?
+    // Let's respect them to narrow down the fallback if the user has other filters selected.
+
+    filteredProducts = filteredProducts.filter((product) => {
         // Category filter
         const matchesCategory =
             $selectedCategory === 'all' || product.data.category === $selectedCategory;
@@ -110,7 +146,6 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
         }
 
         return (
-            matchesSearch &&
             matchesCategory &&
             matchesBrand &&
             matchesPrice &&
@@ -189,6 +224,24 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                 </p>
             </div>
 
+            {/* Fallback Message Alert */}
+            {isFallbackResult && (
+                <div className="col-span-full mb-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm text-amber-700">
+                                {fallbackMessage}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {sortedProducts.length === 0 ? (
                 <div className="col-span-full flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-dashed border-gray-300 shadow-sm">
                     <FiPackage className="w-16 h-16 text-slate-300 mb-4" aria-hidden="true" />
@@ -235,6 +288,19 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                                     {product.data.image ? (
                                         <img
                                             src={product.data.image}
+                                            srcSet={
+                                                product.data.image.includes('/images/products/') && product.data.image.endsWith('.webp')
+                                                    ? (() => {
+                                                        const filename = product.data.image.split('/').pop()?.replace('.webp', '');
+                                                        return `
+                                                            /images/products/responsive/${filename}@400w.webp 400w,
+                                                            /images/products/responsive/${filename}@800w.webp 800w,
+                                                            /images/products/responsive/${filename}@1200w.webp 1200w
+                                                        `;
+                                                    })()
+                                                    : undefined
+                                            }
+                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                             alt={product.data.name}
                                             width="300"
                                             height="225"
