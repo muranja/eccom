@@ -37,7 +37,8 @@ export const CheckoutPageContent: React.FC = () => {
 
     const items = Object.values($cartItems) as CartItem[];
 
-    const WEBHOOK_URL = import.meta.env.PUBLIC_N8N_WEBHOOK_URL || 'https://gatuyu.duckdns.org/webhook-test/21dc22f4-26d8-4122-8b6a-d9c33c85df1c';
+    // Use local proxy to avoid CORS issues
+    const PROXY_URL = '/api/mpesa-proxy';
 
     const handleCall = () => {
         window.location.href = `tel:+${PHONE_NUMBER}`;
@@ -73,24 +74,23 @@ export const CheckoutPageContent: React.FC = () => {
         };
 
         try {
-            // Send to n8n Webhook
-            await fetch(WEBHOOK_URL, {
+            // Send to Local Proxy (which forwards to n8n)
+            const response = await fetch(PROXY_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)
             });
 
-            setOrderPlaced(true);
-            clearCart(); // Optional: clear cart or keep it until payment confirmed? Usually clear it.
-            // Actually, keep cart for now or user loses context if they refresh. 
-            // Let's NOT clear cart yet, wait for manual clear or assume success.
-            // Better to clear it to prevent double order, but since we redirect...
-            // Let's clear it.
-            clearCart();
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Trigger Failed');
+            }
 
-        } catch (error) {
+            setOrderPlaced(true);
+            clearCart();
+        } catch (error: any) {
             console.error("Order trigger failed", error);
-            setSubmitError('Something went wrong. Please try again or contact us directly.');
+            setSubmitError(`Failed: ${error.message || 'Connection Error'}. Check console for details.`);
         } finally {
             setIsSubmitting(false);
         }

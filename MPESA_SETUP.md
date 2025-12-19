@@ -24,7 +24,15 @@ You need to create a **Payment Auth Token** node (not included in JSON for secur
    ```
 2. Restart the dev server (`npm run dev`).
 
-## 4. Testing
-1. Use the **Safaricom Sandbox app** on your phone.
-2. Enter your phone number in the checkout.
-3. You should receive a prompt to pay KES [Amount].
+## 4. Testing & Troubleshooting
+### A. The "It Doesn't Trigger" Fixes
+1.  **Restart the Server**: If you just created `.env`, you **MUST** stop the terminal (Ctrl+C) and run `npm run dev` again. Astro does not see new variables until a restart.
+2.  **Test vs Production URLs**:
+    *   **Testing**: If your URL has `/webhook-test/`, you **MUST** have the n8n window open and click **"Listen for Event"** (or execute node) *before* you click checkout.
+    *   **Live**: If you want it to work automatically, change the URL to `/webhook/` (remove `-test`), save the workflow, and click the **"Active"** switch (top right).
+
+### B. Steps to Verify
+1.  Restart `npm run dev`.
+2.  Open Browser Console (F12).
+3.  Click "Confirm Payment".
+4.  Look for a red error in the console. If it says `CORS` or `404`, your n8n URL is wrong.
