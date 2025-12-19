@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Testimonials from "../components/Testimonials.astro";
 import { SearchFilter } from "../components/SearchFilter";
 import { ProductGrid } from "../components/ProductGrid";
-import { SocialProof } from "../components/SocialProof";
+// import { SocialProof } from "../components/SocialProof"; // Disabled: social proof popup
 import { getCollection } from "astro:content";
 
 const allProducts = await getCollection("products");
@@ -55,8 +55,8 @@ const allProducts = await getCollection("products");
         </div>
     </section>
 
-    <!-- Social Proof Notification -->
-    <SocialProof client:idle />
+    <!-- Social Proof Notification - Disabled -->
+    <!-- <SocialProof client:idle /> -->
 
     <!-- Social Proof Section -->
     <Testimonials />
