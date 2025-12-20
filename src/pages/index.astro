@@ -45,7 +45,7 @@ const allProducts = await getCollection("products");
     </div>
 
     <!-- Search & Filter -->
-    <SearchFilter client:visible />
+    <SearchFilter client:visible products={allProducts} />
 
     <!-- Products Grid -->
     <section aria-labelledby="products-heading">

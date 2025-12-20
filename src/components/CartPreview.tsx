@@ -152,12 +152,26 @@ export const CartPreview: React.FC = () => {
 
                         {/* Action Buttons */}
                         <div className="space-y-2">
-                            <a
-                                href="/checkout"
+                            <button
+                                onClick={() => {
+                                    // Generate Order Summary
+                                    const itemsList = items
+                                        .map(
+                                            (item) =>
+                                                `• ${item.name} (x${item.quantity}) - KES ${(item.price * item.quantity).toLocaleString()}`
+                                        )
+                                        .join('\n');
+
+                                    const message = `Hi SasaGadgets! \n\nI'd like to place an order for:\n\n${itemsList}\n\n*Total: KES ${$cartTotal.toLocaleString()}*\n\nPlease advise on payment (M-Pesa) and delivery location. Thanks!`;
+
+                                    // Open WhatsApp
+                                    const url = `https://wa.me/254714389231?text=${encodeURIComponent(message)}`;
+                                    window.open(url, '_blank');
+                                }}
                                 className="block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg text-center transition-colors"
                             >
-                                Proceed to Checkout
-                            </a>
+                                Order via WhatsApp
+                            </button>
                             <button
                                 onClick={closeCartPreview}
                                 className="block w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border border-gray-300 transition-colors"

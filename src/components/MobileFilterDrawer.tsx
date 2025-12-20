@@ -2,9 +2,10 @@
  * Mobile Filter Drawer
  * Slide-up panel for mobile filter experience
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
 import { FiX, FiFilter, FiCheck } from 'react-icons/fi';
+import Fuse from 'fuse.js';
 import {
     searchQuery,
     selectedCategory,
@@ -14,10 +15,26 @@ import {
     selectedRAM,
     sortOrder,
     resetFilters,
-    getActiveFilterCount,
 } from '../stores/filterStore';
 
-export const MobileFilterDrawer: React.FC = () => {
+interface Product {
+    slug: string;
+    data: {
+        name: string;
+        price: number;
+        category: string;
+        brand: string;
+        inStock: boolean;
+        storage?: number;
+        ram?: number;
+    };
+}
+
+interface MobileFilterDrawerProps {
+    products: Product[];
+}
+
+export const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({ products }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const $searchQuery = useStore(searchQuery);
@@ -58,6 +75,59 @@ export const MobileFilterDrawer: React.FC = () => {
         window.addEventListener('keydown', handleEscape);
         return () => window.removeEventListener('keydown', handleEscape);
     }, []);
+
+    // 1. Filter by Search Query FIRST (same logic as desktop)
+    const searchResults = useMemo(() => {
+        if (!$searchQuery.trim()) return products;
+
+        const fuse = new Fuse(products, {
+            keys: ['data.name', 'data.brand', 'data.category'],
+            threshold: 0.3,
+            ignoreLocation: true
+        });
+
+        return fuse.search($searchQuery).map(r => r.item);
+    }, [products, $searchQuery]);
+
+    // 2. Compute Facets based on Search Results
+    const facets = useMemo(() => {
+        const counts = {
+            category: {} as Record<string, number>,
+            brand: {} as Record<string, number>,
+            storage: {} as Record<string, number>,
+            ram: {} as Record<string, number>,
+        };
+
+        searchResults.forEach(p => {
+            // Category
+            const cat = p.data.category;
+            counts.category[cat] = (counts.category[cat] || 0) + 1;
+
+            // Brand
+            const brand = p.data.brand;
+            counts.brand[brand] = (counts.brand[brand] || 0) + 1;
+
+            // Storage
+            if (p.data.storage) {
+                const storage = p.data.storage.toString();
+                counts.storage[storage] = (counts.storage[storage] || 0) + 1;
+            }
+
+            // RAM
+            if (p.data.ram) {
+                const ram = p.data.ram.toString();
+                counts.ram[ram] = (counts.ram[ram] || 0) + 1;
+            }
+        });
+
+        return counts;
+    }, [searchResults]);
+
+    // Helpers to sort keys
+    const sortedBrands = Object.keys(facets.brand).sort();
+    const sortedCategories = Object.keys(facets.category).sort();
+    const sortedStorage = Object.keys(facets.storage).sort((a, b) => parseInt(a) - parseInt(b));
+    const sortedRAM = Object.keys(facets.ram).sort((a, b) => parseInt(a) - parseInt(b));
 
     return (
         <>
@@ -117,9 +187,11 @@ export const MobileFilterDrawer: React.FC = () => {
                             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-white"
                         >
                             <option value="all">All Types</option>
-                            <option value="phone">Phones</option>
-                            <option value="laptop">Laptops</option>
-                            <option value="tablet">Tablets</option>
+                            {sortedCategories.map(cat => (
+                                <option key={cat} value={cat}>
+                                    {cat.charAt(0).toUpperCase() + cat.slice(1)} ({facets.category[cat]})
+                                </option>
+                            ))}
                         </select>
                     </div>
 
@@ -132,17 +204,11 @@ export const MobileFilterDrawer: React.FC = () => {
                             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-white"
                         >
                             <option value="all">All Brands</option>
-                            <option value="Samsung">Samsung</option>
-                            <option value="Tecno">Tecno</option>
-                            <option value="Infinix">Infinix</option>
-                            <option value="Xiaomi">Xiaomi</option>
-                            <option value="Oppo">Oppo</option>
-                            <option value="Realme">Realme</option>
-                            <option value="Vivo">Vivo</option>
-                            <option value="Apple">Apple</option>
-                            <option value="Nokia">Nokia</option>
-                            <option value="Itel">Itel</option>
-                            <option value="HP">HP</option>
+                            {sortedBrands.map(brand => (
+                                <option key={brand} value={brand}>
+                                    {brand} ({facets.brand[brand]})
+                                </option>
+                            ))}
                         </select>
                     </div>
 
@@ -171,10 +237,11 @@ export const MobileFilterDrawer: React.FC = () => {
                             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-white"
                         >
                             <option value="all">Any Storage</option>
-                            <option value="32">32GB</option>
-                            <option value="64">64GB</option>
-                            <option value="128">128GB</option>
-                            <option value="256">256GB+</option>
+                            {sortedStorage.map(storage => (
+                                <option key={storage} value={storage}>
+                                    {storage}GB ({facets.storage[storage]})
+                                </option>
+                            ))}
                         </select>
                     </div>
 
@@ -187,11 +254,11 @@ export const MobileFilterDrawer: React.FC = () => {
                             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-white"
                         >
                             <option value="all">Any RAM</option>
-                            <option value="2">2GB</option>
-                            <option value="3">3GB</option>
-                            <option value="4">4GB</option>
-                            <option value="6">6GB+</option>
-                            <option value="8">8GB+</option>
+                            {sortedRAM.map(ram => (
+                                <option key={ram} value={ram}>
+                                    {ram}GB ({facets.ram[ram]})
+                                </option>
+                            ))}
                         </select>
                     </div>
 

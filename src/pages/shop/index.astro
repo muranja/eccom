@@ -79,7 +79,7 @@ const canonicalUrl = canonicalParams.toString()
     </div>
 
     <!-- Search & Filter -->
-    <SearchFilter client:load />
+    <SearchFilter client:load products={allProducts} />
 
     <!-- Active Filter Chips -->
     <FilterChips client:load />
@@ -98,5 +98,5 @@ const canonicalUrl = canonicalParams.toString()
     </section>
 
     <!-- Mobile Filter Drawer -->
-    <MobileFilterDrawer client:load />
+    <MobileFilterDrawer client:load products={allProducts} />
 </Layout>

@@ -280,7 +280,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                     return (
                         <div
                             key={product.slug}
-                            className="group relative flex flex-col h-full bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 border border-slate-200 overflow-hidden"
+                            className="group relative flex flex-col h-full bg-white rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border border-slate-200 overflow-hidden"
                         >
                             {/* Product Image */}
                             <a href={`/shop/${product.slug}`} className="block relative overflow-hidden" aria-label={`View ${product.data.name} details`}>
