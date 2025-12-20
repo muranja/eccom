@@ -95,6 +95,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({ products }) => {
     // UI state
     const [showAutocomplete, setShowAutocomplete] = useState(false);
     const [showPricePanel, setShowPricePanel] = useState(false);
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
     const [inputFocused, setInputFocused] = useState(false);
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const pricePanelRef = useRef<HTMLDivElement>(null);
@@ -289,7 +290,99 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({ products }) => {
                 </div>
             </div>
 
-            {/* Filters Grid - Hidden on mobile, shown on tablet+ */}
+            {/* Mobile Filters Toggle Button */}
+            <div className="md:hidden mb-4">
+                <button
+                    onClick={() => setShowMobileFilters(!showMobileFilters)}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${hasActiveFilters
+                            ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                            : 'bg-slate-50 border-slate-200 text-slate-700'
+                        }`}
+                >
+                    <span className="font-medium flex items-center gap-2">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        Filters
+                        {hasActiveFilters && (
+                            <span className="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                {[
+                                    $selectedCategory !== 'all',
+                                    $selectedBrand !== 'all',
+                                    $selectedPriceRange !== 'all',
+                                    $selectedStorage !== 'all',
+                                    $selectedRAM !== 'all'
+                                ].filter(Boolean).length}
+                            </span>
+                        )}
+                    </span>
+                    <svg className={`w-5 h-5 transition-transform ${showMobileFilters ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+            </div>
+
+            {/* Mobile Filters Grid - Collapsible */}
+            <div className={`md:hidden overflow-hidden transition-all duration-300 ${showMobileFilters ? 'max-h-96 opacity-100 mb-4' : 'max-h-0 opacity-0'}`}>
+                <div className="grid grid-cols-2 gap-3">
+                    {/* Category */}
+                    <select
+                        value={$selectedCategory}
+                        onChange={(e) => selectedCategory.set(e.target.value)}
+                        className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    >
+                        <option value="all">All Categories</option>
+                        {sortedCategories.map(cat => (
+                            <option key={cat} value={cat}>
+                                {cat.charAt(0).toUpperCase() + cat.slice(1)} ({facets.category[cat]})
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Brand */}
+                    <select
+                        value={$selectedBrand}
+                        onChange={(e) => selectedBrand.set(e.target.value)}
+                        className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    >
+                        <option value="all">All Brands</option>
+                        {sortedBrands.map(brand => (
+                            <option key={brand} value={brand}>
+                                {brand} ({facets.brand[brand]})
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Price */}
+                    <select
+                        value={$selectedPriceRange}
+                        onChange={(e) => setPricePreset(e.target.value)}
+                        className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    >
+                        <option value="all">Any Price</option>
+                        <option value="under15k">Under 15K</option>
+                        <option value="15k-30k">15K - 30K</option>
+                        <option value="30k-50k">30K - 50K</option>
+                        <option value="above50k">Above 50K</option>
+                    </select>
+
+                    {/* Storage */}
+                    <select
+                        value={$selectedStorage}
+                        onChange={(e) => selectedStorage.set(e.target.value)}
+                        className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    >
+                        <option value="all">Any Storage</option>
+                        {sortedStorage.map(storage => (
+                            <option key={storage} value={storage}>
+                                {storage}GB ({facets.storage[storage]})
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            {/* Desktop Filters Grid - Always visible on tablet+ */}
             <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-3">
                 {/* Category */}
                 <select
