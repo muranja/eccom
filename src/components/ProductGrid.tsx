@@ -21,6 +21,8 @@ import {
     selectedRAM,
     sortOrder,
     resetFilters,
+    minPrice,
+    maxPrice,
 } from '../stores/filterStore';
 
 interface Product {
@@ -52,6 +54,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
     const $selectedStorage = useStore(selectedStorage);
     const $selectedRAM = useStore(selectedRAM);
     const $sortOrder = useStore(sortOrder);
+    const $minPrice = useStore(minPrice);
+    const $maxPrice = useStore(maxPrice);
 
     // Derived state for fallback message
     let fallbackMessage = '';
@@ -107,19 +111,24 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
         let matchesPrice = true;
         if ($selectedPriceRange !== 'all') {
             const price = product.data.price;
-            switch ($selectedPriceRange) {
-                case 'under15k':
-                    matchesPrice = price < 15000;
-                    break;
-                case '15k-30k':
-                    matchesPrice = price >= 15000 && price < 30000;
-                    break;
-                case '30k-50k':
-                    matchesPrice = price >= 30000 && price < 50000;
-                    break;
-                case 'above50k':
-                    matchesPrice = price >= 50000;
-                    break;
+            if ($selectedPriceRange === 'custom') {
+                // Custom range - use minPrice/maxPrice values
+                matchesPrice = price >= $minPrice && price <= $maxPrice;
+            } else {
+                switch ($selectedPriceRange) {
+                    case 'under15k':
+                        matchesPrice = price < 15000;
+                        break;
+                    case '15k-30k':
+                        matchesPrice = price >= 15000 && price < 30000;
+                        break;
+                    case '30k-50k':
+                        matchesPrice = price >= 30000 && price < 50000;
+                        break;
+                    case 'above50k':
+                        matchesPrice = price >= 50000;
+                        break;
+                }
             }
         }
 

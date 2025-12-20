@@ -18,6 +18,10 @@ export const selectedStorage = atom<string>('all');
 export const selectedRAM = atom<string>('all');
 export const sortOrder = atom<string>('default');
 
+// Custom price range (min/max in KES)
+export const minPrice = atom<number>(0);
+export const maxPrice = atom<number>(200000);
+
 // Valid options for validation
 export const VALID_CATEGORIES = ['all', 'phone', 'laptop', 'tablet', 'accessory'];
 export const VALID_BRANDS = ['all', 'Samsung', 'Tecno', 'Infinix', 'Xiaomi', 'Oppo', 'Realme', 'Vivo', 'Apple', 'Nokia', 'HP', 'Itel', 'Umidigi'];
@@ -97,4 +101,34 @@ export function resetFilters(): void {
     selectedStorage.set('all');
     selectedRAM.set('all');
     sortOrder.set('default');
+    minPrice.set(0);
+    maxPrice.set(200000);
+}
+
+/**
+ * Set price range from presets
+ */
+export function setPricePreset(preset: string): void {
+    selectedPriceRange.set(preset);
+    switch (preset) {
+        case 'under15k':
+            minPrice.set(0);
+            maxPrice.set(15000);
+            break;
+        case '15k-30k':
+            minPrice.set(15000);
+            maxPrice.set(30000);
+            break;
+        case '30k-50k':
+            minPrice.set(30000);
+            maxPrice.set(50000);
+            break;
+        case 'above50k':
+            minPrice.set(50000);
+            maxPrice.set(200000);
+            break;
+        default:
+            minPrice.set(0);
+            maxPrice.set(200000);
+    }
 }
